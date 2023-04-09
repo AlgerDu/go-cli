@@ -1,3 +1,3 @@
-module github.com/AlgerDu/go-cli/v1
+module github.com/AlgerDu/go-cli
 
 go 1.19
