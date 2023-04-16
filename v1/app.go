@@ -1,8 +1,14 @@
 package cli
 
-func New(
-	version string,
-	usage string,
-) App {
+type innerApp struct {
+	Usage   string
+	Version string
+
+	Action CommandAction
+
+	Cmds map[string]*innerCommandMeta
+}
+
+func (app *innerApp) Run(args []string) error {
 	return nil
 }

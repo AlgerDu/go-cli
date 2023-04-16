@@ -8,8 +8,11 @@ import (
 
 func main() {
 
-	app := cli.New("1.0", "test")
-	app.AddCommand(helloCommand)
+	builder := cli.NewBuilder().
+		AddCommand(helloCommand, func(cs cli.CommandSettor) {
+			cs.AddSucCommand(helloCommand)
+		})
 
+	app := builder.Build()
 	app.Run(os.Args)
 }

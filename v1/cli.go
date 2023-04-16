@@ -1,11 +1,12 @@
 package cli
 
 type CommandMeta struct {
-	Parent  string
 	Name    string
 	Usage   string
 	Aliases []string
 }
+
+type CommandAction func(*Context, any) error
 
 type Command interface {
 	GetDescripton() *CommandMeta
@@ -13,12 +14,25 @@ type Command interface {
 	Action(c *Context, flags any) error
 }
 
+type AppMeta struct {
+	Usage   string
+	Version string
+}
+
+type AddCommandOption func(CommandSettor)
+
+type CommandSettor interface {
+	AddSucCommand(Command, ...AddCommandOption)
+}
+
 type App interface {
-	AddCommand(command Command)
-	Run(args []string)
+	Run(args []string) error
 }
 
 type AppBuilder interface {
-	AddCommand(command Command)
+	SetVersion(version string) AppBuilder
+	SetUsage(usage string) AppBuilder
+	SetAction(action CommandAction) AppBuilder
+	AddCommand(Command, ...AddCommandOption) AppBuilder
 	Build() App
 }
