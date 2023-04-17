@@ -6,7 +6,7 @@ type innerApp struct {
 
 	Action CommandAction
 
-	Cmds map[string]*innerCommandMeta
+	Cmds map[string]*innerCommand
 }
 
 func (app *innerApp) Run(args []string) error {

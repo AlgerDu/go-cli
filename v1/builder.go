@@ -7,7 +7,7 @@ type defaultBuilder struct {
 func NewBuilder() AppBuilder {
 	return &defaultBuilder{
 		app: &innerApp{
-			Cmds: map[string]*innerCommandMeta{},
+			Cmds: map[string]*innerCommand{},
 		},
 	}
 }
