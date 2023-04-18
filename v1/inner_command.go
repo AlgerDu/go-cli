@@ -9,8 +9,16 @@ type innerCommand struct {
 }
 
 func NewInnerCommand(cmd Command) *innerCommand {
+
+	meta := cmd.GetDescripton()
+	if meta == nil {
+		meta = &CommandMeta{
+			Name: "__APP__",
+		}
+	}
+
 	return &innerCommand{
-		CommandMeta:  cmd.GetDescripton(),
+		CommandMeta:  meta,
 		Action:       cmd.Action,
 		DefaultFlags: cmd.GetDefaultFlags(),
 		Children:     map[string]*innerCommand{},

@@ -22,11 +22,14 @@ func (builder *defaultBuilder) SetUsage(usage string) AppBuilder {
 	return builder
 }
 
-func (builder *defaultBuilder) SetAction(action CommandAction) AppBuilder {
-	return builder
-}
-
 func (builder *defaultBuilder) AddCommand(command Command, opt ...AddCommandOption) AppBuilder {
+
+	innerCommand := NewInnerCommand(command)
+	builder.app.Cmds[innerCommand.Name] = innerCommand
+
+	for _, option := range opt {
+		option(innerCommand)
+	}
 
 	return builder
 }

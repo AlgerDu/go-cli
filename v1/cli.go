@@ -14,11 +14,6 @@ type Command interface {
 	Action(c *Context, flags any) error
 }
 
-type AppMeta struct {
-	Usage   string
-	Version string
-}
-
 type AddCommandOption func(CommandSettor)
 
 type CommandSettor interface {
@@ -32,7 +27,6 @@ type App interface {
 type AppBuilder interface {
 	SetVersion(version string) AppBuilder
 	SetUsage(usage string) AppBuilder
-	SetAction(action CommandAction) AppBuilder
 	AddCommand(Command, ...AddCommandOption) AppBuilder
 	Build() App
 }

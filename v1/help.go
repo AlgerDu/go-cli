@@ -35,6 +35,13 @@ func (cmd *HelpCommand) Action(c *Context, flags any) error {
 
 	f := flags.(HelpCommandFlags)
 
+	fmt.Print(cmd.app.Name)
+	fmt.Print(cmd.app.Usage)
+
+	if f.Path == "" {
+
+	}
+
 	fmt.Println(f)
 
 	return nil
