@@ -4,9 +4,10 @@ type defaultBuilder struct {
 	app *innerApp
 }
 
-func NewBuilder() AppBuilder {
+func NewBuilder(name string) AppBuilder {
 	return &defaultBuilder{
 		app: &innerApp{
+			Name: name,
 			Cmds: map[string]*innerCommand{},
 		},
 	}

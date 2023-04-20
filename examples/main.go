@@ -8,7 +8,8 @@ import (
 
 func main() {
 
-	builder := cli.NewBuilder().
+	builder := cli.NewBuilder("hello").
+		SetUsage("hellow {name}").
 		AddCommand(helloCommand, func(cs cli.CommandSettor) {
 			cs.AddSucCommand(helloCommand)
 		})

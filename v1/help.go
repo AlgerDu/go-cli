@@ -1,14 +1,8 @@
 package cli
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type (
-	HelpCommandFlags struct {
-		Path string
-	}
-
 	HelpCommand struct {
 		*BaseCommand
 
@@ -16,15 +10,22 @@ type (
 	}
 )
 
-func NewHelp(
+var (
+	cmdName_Help = "help"
+	helpCmdFlags = map[string]bool{
+		"-h":     true,
+		"--help": true,
+	}
+)
+
+func newHelp(
 	app *innerApp,
 ) *HelpCommand {
 
 	return &HelpCommand{
 		BaseCommand: &BaseCommand{
-			DefaultFlags: &HelpCommandFlags{},
 			Meta: &CommandMeta{
-				Name: "help",
+				Name: cmdName_Help,
 			},
 		},
 		app: app,
@@ -33,16 +34,10 @@ func NewHelp(
 
 func (cmd *HelpCommand) Action(c *Context, flags any) error {
 
-	f := flags.(HelpCommandFlags)
-
-	fmt.Print(cmd.app.Name)
-	fmt.Print(cmd.app.Usage)
-
-	if f.Path == "" {
-
-	}
-
-	fmt.Println(f)
+	fmt.Printf("%s\n", cmd.app.Name)
+	fmt.Printf("\n")
+	fmt.Printf("usage:\n")
+	fmt.Printf("%s", cmd.app.Usage)
 
 	return nil
 }
