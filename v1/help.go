@@ -1,7 +1,5 @@
 package cli
 
-import "fmt"
-
 type (
 	HelpCommand struct {
 		*BaseCommand
@@ -34,10 +32,11 @@ func newHelp(
 
 func (cmd *HelpCommand) Action(c *Context, flags any) error {
 
-	fmt.Printf("%s\n", cmd.app.Name)
-	fmt.Printf("\n")
-	fmt.Printf("usage:\n")
-	fmt.Printf("%s", cmd.app.Usage)
+	c.Stdout.
+		Println(cmd.app.Name).
+		NewLline().
+		Println("usage:").
+		Println(cmd.app.Usage)
 
 	return nil
 }

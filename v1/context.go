@@ -1,13 +1,31 @@
 package cli
 
-import "os"
+import (
+	"os"
+)
 
-type Context struct {
-	WorkDir string
+type (
+	Stdout interface {
+		Scope(word string) Stdout
 
-	CommandPaths []string
-	Flags        map[string]string
-}
+		NewLline() Stdout
+
+		Printf(format string, a ...any) Stdout
+		Print(a ...any) Stdout
+
+		Printfln(format string, a ...any) Stdout
+		Println(a ...any) Stdout
+	}
+
+	Context struct {
+		WorkDir string
+
+		CommandPaths []string
+		Flags        map[string]string
+
+		Stdout Stdout
+	}
+)
 
 func newContext() *Context {
 
@@ -18,5 +36,7 @@ func newContext() *Context {
 
 		CommandPaths: []string{},
 		Flags:        map[string]string{},
+
+		Stdout: newStdout(),
 	}
 }
