@@ -34,22 +34,26 @@ func (stdout *stdout) NewLline() Stdout {
 }
 
 func (stdout *stdout) Printf(format string, a ...any) Stdout {
+	fmt.Print(stdout.extWord)
 	fmt.Printf(format, a...)
 	return stdout
 }
 
 func (stdout *stdout) Print(a ...any) Stdout {
+	fmt.Print(stdout.extWord)
 	fmt.Print(a...)
 	return stdout
 }
 
 func (stdout *stdout) Printfln(format string, a ...any) Stdout {
+	fmt.Print(stdout.extWord)
 	fmt.Printf(format, a...)
 	fmt.Println()
 	return stdout
 }
 
 func (stdout *stdout) Println(a ...any) Stdout {
+	fmt.Print(stdout.extWord)
 	fmt.Println(a...)
 	return stdout
 }

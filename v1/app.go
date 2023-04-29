@@ -6,11 +6,9 @@ import (
 )
 
 type innerApp struct {
-	Name    string
-	Usage   string
-	Version string
+	*innerCommand
 
-	Cmds map[string]*innerCommand
+	Version string
 }
 
 func (app *innerApp) Run(args []string) error {
@@ -84,4 +82,32 @@ func (app *innerApp) isHelp(context *Context) bool {
 	}
 
 	return false
+}
+
+func (app *innerApp) findCmd(c *Context) (*innerCommand, bool) {
+
+	cmd := app.innerCommand
+
+	if len(c.CommandPaths) == 0 {
+		return cmd, true
+	}
+
+	for _, path := range c.CommandPaths {
+
+		findChild := false
+
+		for _, childCmd := range cmd.Children {
+			if childCmd.Check(path) {
+				findChild = true
+				cmd = childCmd
+				break
+			}
+		}
+
+		if !findChild {
+			return nil, false
+		}
+	}
+
+	return cmd, false
 }

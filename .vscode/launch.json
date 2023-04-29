@@ -9,7 +9,13 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/examples"
+            "program": "${workspaceFolder}/examples",
+            "args": [
+                "test",
+                "-abc",
+                "world",
+                "-h",
+            ]
         }
     ]
 }

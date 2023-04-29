@@ -7,8 +7,12 @@ type defaultBuilder struct {
 func NewBuilder(name string) AppBuilder {
 	return &defaultBuilder{
 		app: &innerApp{
-			Name: name,
-			Cmds: map[string]*innerCommand{},
+			innerCommand: &innerCommand{
+				CommandMeta:  &CommandMeta{},
+				DefaultFlags: nil,
+				Children:     map[string]*innerCommand{},
+			},
+			Version: "",
 		},
 	}
 }
@@ -26,7 +30,11 @@ func (builder *defaultBuilder) SetUsage(usage string) AppBuilder {
 func (builder *defaultBuilder) AddCommand(command Command, opt ...AddCommandOption) AppBuilder {
 
 	innerCommand := NewInnerCommand(command)
-	builder.app.Cmds[innerCommand.Name] = innerCommand
+
+	if innerCommand.Name == "" {
+		builder.app.Action = innerCommand.Action
+		innerCommand = builder.app.innerCommand
+	}
 
 	for _, option := range opt {
 		option(innerCommand)

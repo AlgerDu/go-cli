@@ -39,3 +39,18 @@ func (command *innerCommand) AddSucCommand(
 		}
 	}
 }
+
+func (cmd *innerCommand) Check(path string) bool {
+
+	if cmd.Name == path {
+		return true
+	}
+
+	for _, alias := range cmd.Aliases {
+		if alias == path {
+			return true
+		}
+	}
+
+	return false
+}
