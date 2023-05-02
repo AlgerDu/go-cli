@@ -11,8 +11,8 @@
             "mode": "auto",
             "program": "${workspaceFolder}/examples",
             "args": [
-                "test",
-                "-abc",
+                "hello",
+                "--name",
                 "world",
                 "-h",
             ]

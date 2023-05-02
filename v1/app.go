@@ -16,13 +16,9 @@ func (app *innerApp) Run(args []string) error {
 	fmt.Printf("args: %v\n", args)
 
 	context := newContext()
-
 	context.CommandPaths, context.Flags = app.anaylseArgs(args)
 
-	fmt.Printf("cmdPath: %v, flags: %v\n", context.CommandPaths, context.Flags)
-
 	if app.isHelp(context) {
-		fmt.Println("it is help")
 
 		helpCmd := newHelp(app)
 		helpCmd.Action(context, nil)
@@ -109,5 +105,5 @@ func (app *innerApp) findCmd(c *Context) (*innerCommand, bool) {
 		}
 	}
 
-	return cmd, false
+	return cmd, true
 }

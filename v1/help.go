@@ -40,7 +40,7 @@ func (cmd *HelpCommand) Action(c *Context, flags any) error {
 		return nil
 	}
 
-	cmd.outputCmd(c.Stdout, toDescriptCmd)
+	cmd.outputCmd(c, toDescriptCmd)
 
 	return nil
 }
@@ -63,10 +63,16 @@ func (cmd *HelpCommand) outputUnsupportCmd(stdout Stdout, paths []string) {
 		NewLline()
 }
 
-func (cmd *HelpCommand) outputCmd(stdout Stdout, toDescriptCmd *innerCommand) {
+func (cmd *HelpCommand) outputCmd(c *Context, toDescriptCmd *innerCommand) {
 
-	stdout.
+	c.Stdout.
 		Println("NAME:").
+		Scope(DefaultScopeWord).
+		Println(c.CommandPaths).
+		NewLline()
+
+	c.Stdout.
+		Println("USAGE:").
 		Scope(DefaultScopeWord).
 		Println(toDescriptCmd.Usage).
 		NewLline()

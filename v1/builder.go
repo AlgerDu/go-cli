@@ -12,7 +12,7 @@ func NewBuilder(name string) AppBuilder {
 				DefaultFlags: nil,
 				Children:     map[string]*innerCommand{},
 			},
-			Version: "",
+			Version: "1.0.0",
 		},
 	}
 }
@@ -34,10 +34,12 @@ func (builder *defaultBuilder) AddCommand(command Command, opt ...AddCommandOpti
 	if innerCommand.Name == "" {
 		builder.app.Action = innerCommand.Action
 		innerCommand = builder.app.innerCommand
-	}
 
-	for _, option := range opt {
-		option(innerCommand)
+		for _, option := range opt {
+			option(innerCommand)
+		}
+	} else {
+		builder.app.AddSucCommand(command, opt...)
 	}
 
 	return builder

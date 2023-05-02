@@ -24,7 +24,11 @@ var (
 	helloCommand = &HelloCommand{
 		BaseCommand: &cli.BaseCommand{
 			DefaultFlags: defaultHelloCommandFlags,
-			Meta:         nil,
+			Meta: &cli.CommandMeta{
+				Name:    "hello",
+				Usage:   "say hello",
+				Aliases: []string{},
+			},
 		},
 	}
 )
