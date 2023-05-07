@@ -78,6 +78,10 @@ func (cmd *HelpCommand) outputCmd(c *Context, toDescriptCmd *innerCommand) {
 		NewLline()
 }
 
-func (cmd *HelpCommand) outputSupportCmds(c *Context) error {
+func (cmd *HelpCommand) outputSubCmds(c *Context) error {
+	return nil
+}
+
+func (cmd *HelpCommand) outputCmdFlags(c *Context, toDescriptCmd *innerCommand) error {
 	return nil
 }

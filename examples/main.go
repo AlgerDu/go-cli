@@ -9,7 +9,7 @@ import (
 func main() {
 
 	builder := cli.NewBuilder("hello").
-		SetUsage("hello {name}").
+		SetUsage("say hello to someone").
 		AddCommand(helloCommand, func(cs cli.CommandSettor) {
 			cs.AddSucCommand(helloCommand)
 		})

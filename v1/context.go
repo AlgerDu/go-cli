@@ -40,3 +40,7 @@ func newContext() *Context {
 		Stdout: newStdout(),
 	}
 }
+
+func (context *Context) anaylseFlag() {
+
+}
