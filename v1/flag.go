@@ -12,30 +12,42 @@ type (
 		Aliases   []string
 		Default   any
 		Require   bool
+		Multiple  bool
 		Usage     string
 	}
 
-	flagTagField   string
-	flagTagHandler func(*flag, string) error
+	flagFieldAnaylser func(*flag, string) error
+
+	flagFieldAnaylsers struct {
+		UserSet flagFieldAnaylser
+		Defaut  flagFieldAnaylser
+	}
+
+	flagField string
 )
 
 var (
 	flagTagName string = "flag"
 
-	ftf_Name    flagTagField = "name"
-	ftf_Aliases flagTagField = "aliases"
-	ftf_Require flagTagField = "require"
-	ftf_Usage   flagTagField = "usage"
+	ff_Name    flagField = "name"
+	ff_Aliases flagField = "aliases"
+	ff_Require flagField = "require"
+	ff_Usage   flagField = "usage"
 
-	flagHandlers = map[flagTagField]flagTagHandler{
-		ftf_Name:    flagTag_Name,
-		ftf_Aliases: flagTag_Aliases,
-		ftf_Require: flagTag_Require,
-		ftf_Usage:   flagTag_Usage,
+	ff_Handlers = map[flagField]flagFieldAnaylsers{
+		ff_Name: {
+			UserSet: ffa_Name_UserSet,
+			Defaut:  ffa_Name_Default,
+		},
 	}
 )
 
-func flagTag_Name(flag *flag, value string) error {
+func ffa_Name_UserSet(flag *flag, value string) error {
+	flag.Name = value
+	return nil
+}
+
+func ffa_Name_Default(flag *flag, value string) error {
 	flag.Name = value
 	return nil
 }
@@ -84,7 +96,7 @@ func anaylseFlags(a any) []*flag {
 				value = words[1]
 			}
 
-			handler, exist := flagHandlers[flagTagField(field)]
+			handler, exist := flagHandlers[flagField(field)]
 			if exist {
 				handler(flag, value)
 			}
