@@ -34,7 +34,6 @@ func Ext_StringTo(value string) string {
 	}
 
 	if hasUpper {
-
 		if (upperCharIndex) != 0 {
 			newValue = append(newValue, byte('-'))
 		}

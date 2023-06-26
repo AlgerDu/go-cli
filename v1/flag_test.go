@@ -5,7 +5,8 @@ import (
 )
 
 type exampleFlag struct {
-	HasChild bool `flag:"name:has-child,usage:hasChild"`
+	HasChild    bool `flag:"name:has-child2,usage:hasChild"`
+	TestDefault bool
 }
 
 func TestAnaylseFlag(t *testing.T) {
@@ -19,4 +20,5 @@ func TestAnaylseFlag(t *testing.T) {
 	}
 
 	t.Log(flags[0])
+	t.Log(flags[1])
 }

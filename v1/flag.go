@@ -39,6 +39,18 @@ var (
 			UserSet: ffa_Name_UserSet,
 			Defaut:  ffa_Name_Default,
 		},
+		ff_Aliases: {
+			UserSet: ffa_Aliases_UserSet,
+			Defaut:  ffa_Aliases_Default,
+		},
+		ff_Require: {
+			UserSet: ffa_Require_UserSet,
+			Defaut:  ffa_Require_Default,
+		},
+		ff_Usage: {
+			UserSet: ffa_Usage_UserSet,
+			Defaut:  ffa_Usage_Default,
+		},
 	}
 )
 
@@ -48,21 +60,35 @@ func ffa_Name_UserSet(flag *flag, value string) error {
 }
 
 func ffa_Name_Default(flag *flag, value string) error {
-	flag.Name = value
+	flag.Name = Ext_StringTo(value)
 	return nil
 }
 
-func flagTag_Aliases(flag *flag, value string) error {
+func ffa_Aliases_UserSet(flag *flag, value string) error {
 	flag.Aliases = strings.Split(value, "|")
 	return nil
 }
 
-func flagTag_Require(flag *flag, value string) error {
+func ffa_Aliases_Default(flag *flag, value string) error {
+	return nil
+}
+
+func ffa_Require_UserSet(flag *flag, value string) error {
 	flag.Require = true
 	return nil
 }
 
-func flagTag_Usage(flag *flag, value string) error {
+func ffa_Require_Default(flag *flag, value string) error {
+	flag.Require = false
+	return nil
+}
+
+func ffa_Usage_UserSet(flag *flag, value string) error {
+	flag.Usage = value
+	return nil
+}
+
+func ffa_Usage_Default(flag *flag, value string) error {
 	flag.Usage = value
 	return nil
 }
@@ -86,19 +112,27 @@ func anaylseFlags(a any) []*flag {
 		tag := field.Tag.Get(flagTagName)
 
 		flag := &flag{}
+		userSets := map[string]string{}
 
-		tagFields := strings.Split(tag, ",")
-		for _, tagField := range tagFields {
-			words := strings.Split(tagField, ":")
+		sets := strings.Split(tag, ",")
+		for _, set := range sets {
+			words := strings.Split(set, ":")
 			field := words[0]
 			value := ""
 			if len(words) >= 2 {
 				value = words[1]
 			}
 
-			handler, exist := flagHandlers[flagField(field)]
-			if exist {
-				handler(flag, value)
+			userSets[field] = value
+		}
+
+		for name, handlers := range ff_Handlers {
+
+			value, userSet := userSets[string(name)]
+			if userSet {
+				handlers.UserSet(flag, value)
+			} else {
+				handlers.Defaut(flag, field.Name)
 			}
 		}
 

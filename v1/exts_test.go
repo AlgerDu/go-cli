@@ -34,3 +34,14 @@ func TestString3(t *testing.T) {
 		t.Errorf("%s != %s", rst, dst)
 	}
 }
+
+func TestString4(t *testing.T) {
+	src := "ID"
+	dst := "id"
+
+	rst := Ext_StringTo(src)
+
+	if rst != dst {
+		t.Errorf("%s != %s", rst, dst)
+	}
+}
