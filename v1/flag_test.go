@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"testing"
 )
 
@@ -12,13 +13,32 @@ type exampleFlag struct {
 func TestAnaylseFlag(t *testing.T) {
 
 	flags := anaylseFlags(&exampleFlag{
-		HasChild: false,
+		HasChild: true,
 	})
 
 	if len(flags) <= 0 {
 		t.Error("flags length <= 0")
 	}
 
-	t.Log(flags[0])
-	t.Log(flags[1])
+	value, _ := json.Marshal(flags[0])
+	t.Log(string(value))
+	value, _ = json.Marshal(flags[1])
+	t.Log(string(value))
+}
+
+type arrayFlag struct {
+	TargetOS []string
+}
+
+func TestFlag_ArrayField(t *testing.T) {
+
+	flags := anaylseFlags(&arrayFlag{})
+
+	if len(flags) <= 0 {
+		t.Error("flags length <= 0")
+	}
+
+	if flags[0].Multiple == false {
+		t.Error("flags 0 is not multiple")
+	}
 }

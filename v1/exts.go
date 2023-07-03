@@ -1,5 +1,7 @@
 package cli
 
+import "reflect"
+
 func Ext_StringTo(value string) string {
 
 	newValue := make([]byte, 0, len(value)*2)
@@ -45,4 +47,19 @@ func Ext_StringTo(value string) string {
 	}
 
 	return string(newValue)
+}
+
+func Ext_TypeIsArray(t reflect.Type) bool {
+
+	typeKind := t.Kind()
+
+	if typeKind == reflect.Pointer {
+		typeKind = t.Elem().Kind()
+	}
+
+	if typeKind == reflect.Array || typeKind == reflect.Slice {
+		return true
+	}
+
+	return false
 }

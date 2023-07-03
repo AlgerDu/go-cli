@@ -54,6 +54,59 @@ var (
 	}
 )
 
+func anaylseFlags(flagDefaultValue any) []*flag {
+
+	dstType := reflect.TypeOf(flagDefaultValue)
+	defaultValue := reflect.ValueOf(flagDefaultValue)
+
+	if dstType.Kind() == reflect.Pointer {
+		dstType = dstType.Elem()
+		defaultValue = defaultValue.Elem()
+	}
+
+	fieldCout := dstType.NumField()
+	flags := []*flag{}
+
+	for i := 0; i < fieldCout; i++ {
+		field := dstType.Field(i)
+		tag := field.Tag.Get(flagTagName)
+		flag := &flag{}
+		sets := map[string]string{}
+		tagSets := strings.Split(tag, ",")
+
+		for _, set := range tagSets {
+			words := strings.Split(set, ":")
+			field := words[0]
+			value := ""
+			if len(words) >= 2 {
+				value = words[1]
+			}
+
+			sets[field] = value
+		}
+
+		for name, handlers := range ff_Handlers {
+			value, userSet := sets[string(name)]
+			if userSet {
+				handlers.UserSet(flag, value)
+			} else {
+				handlers.Defaut(flag, field.Name)
+			}
+		}
+
+		flag.FieldName = field.Name
+		flag.Default = defaultValue.Field(i).Interface()
+
+		if Ext_TypeIsArray(field.Type) {
+			flag.Multiple = true
+		}
+
+		flags = append(flags, flag)
+	}
+
+	return flags
+}
+
 func ffa_Name_UserSet(flag *flag, value string) error {
 	flag.Name = value
 	return nil
@@ -91,56 +144,4 @@ func ffa_Usage_UserSet(flag *flag, value string) error {
 func ffa_Usage_Default(flag *flag, value string) error {
 	flag.Usage = value
 	return nil
-}
-
-func anaylseFlags(a any) []*flag {
-
-	dstType := reflect.TypeOf(a)
-	defaultValue := reflect.ValueOf(a)
-
-	if dstType.Kind() == reflect.Pointer {
-		dstType = dstType.Elem()
-		defaultValue = defaultValue.Elem()
-	}
-
-	fieldCout := dstType.NumField()
-
-	flags := []*flag{}
-
-	for i := 0; i < fieldCout; i++ {
-		field := dstType.Field(i)
-		tag := field.Tag.Get(flagTagName)
-
-		flag := &flag{}
-		userSets := map[string]string{}
-
-		sets := strings.Split(tag, ",")
-		for _, set := range sets {
-			words := strings.Split(set, ":")
-			field := words[0]
-			value := ""
-			if len(words) >= 2 {
-				value = words[1]
-			}
-
-			userSets[field] = value
-		}
-
-		for name, handlers := range ff_Handlers {
-
-			value, userSet := userSets[string(name)]
-			if userSet {
-				handlers.UserSet(flag, value)
-			} else {
-				handlers.Defaut(flag, field.Name)
-			}
-		}
-
-		flag.FieldName = field.Name
-		flag.Default = defaultValue.Field(i)
-
-		flags = append(flags, flag)
-	}
-
-	return flags
 }
