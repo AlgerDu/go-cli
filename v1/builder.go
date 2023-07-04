@@ -46,5 +46,9 @@ func (builder *defaultBuilder) AddCommand(command Command, opt ...AddCommandOpti
 }
 
 func (builder *defaultBuilder) Build() App {
+
+	innerHelpCmd := newHelp(builder.app)
+	builder.AddCommand(innerHelpCmd)
+
 	return builder.app
 }

@@ -16,15 +16,20 @@ func (app *innerApp) Run(args []string) error {
 	fmt.Printf("args: %v\n", args)
 
 	context := newContext()
-	context.CommandPaths, context.Flags = app.anaylseArgs(args)
+	context.CommandPaths, context.UserSetFlags = app.anaylseArgs(args)
+
+	cmdPaths := context.CommandPaths
 
 	if app.isHelp(context) {
-
-		helpCmd := newHelp(app)
-		helpCmd.Action(context, nil)
+		cmdPaths = []string{"help"}
 	}
 
-	return nil
+	cmd, exist := app.findCmd(cmdPaths...)
+	if !exist {
+		return nil
+	}
+
+	return cmd.Action(context, nil)
 }
 
 func (app *innerApp) anaylseArgs(args []string) ([]string, map[string]string) {
@@ -70,7 +75,7 @@ func (app *innerApp) isHelp(context *Context) bool {
 		}
 	}
 
-	for flag := range context.Flags {
+	for flag := range context.UserSetFlags {
 		value, exist := helpCmdFlags[flag]
 		if exist && value {
 			return true
@@ -80,15 +85,15 @@ func (app *innerApp) isHelp(context *Context) bool {
 	return false
 }
 
-func (app *innerApp) findCmd(c *Context) (*innerCommand, bool) {
+func (app *innerApp) findCmd(cmdPaths ...string) (*innerCommand, bool) {
 
 	cmd := app.innerCommand
 
-	if len(c.CommandPaths) == 0 {
+	if len(cmdPaths) == 0 {
 		return cmd, true
 	}
 
-	for _, path := range c.CommandPaths {
+	for _, path := range cmdPaths {
 
 		findChild := false
 

@@ -21,7 +21,7 @@ type (
 		WorkDir string
 
 		CommandPaths []string
-		Flags        map[string]string
+		UserSetFlags map[string]string
 
 		Stdout Stdout
 	}
@@ -35,7 +35,7 @@ func newContext() *Context {
 		WorkDir: wd,
 
 		CommandPaths: []string{},
-		Flags:        map[string]string{},
+		UserSetFlags: map[string]string{},
 
 		Stdout: newStdout(),
 	}
