@@ -8,7 +8,8 @@ import (
 
 type (
 	HelloCommandFlags struct {
-		Name string `cli:"name"`
+		Name      string `cli:"name"`
+		ClassRoom string
 	}
 
 	HelloCommand struct {
@@ -23,6 +24,10 @@ var (
 
 	helloCommand = &HelloCommand{
 		BaseCommand: &cli.BaseCommand{
+			Meta: &cli.CommandMeta{
+				Name:  "hello",
+				Usage: "say hello to someone",
+			},
 			DefaultFlags: defaultHelloCommandFlags,
 		},
 	}

@@ -10,9 +10,7 @@ func main() {
 
 	builder := cli.NewBuilder("hello").
 		SetUsage("say hello to someone").
-		AddCommand(helloCommand, func(cs cli.CommandSettor) {
-			cs.AddSucCommand(helloCommand)
-		})
+		AddCommand(helloCommand)
 
 	app := builder.Build()
 	app.Run(os.Args)
