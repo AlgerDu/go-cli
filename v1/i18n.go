@@ -3,7 +3,7 @@ package cli
 import (
 	"bytes"
 	"fmt"
-	"html/template"
+	"text/template"
 )
 
 type (
@@ -27,7 +27,8 @@ func AnaylseTemplate(tag I18nTag, data any) string {
 		return fmt.Sprintf("tag [%s] is not exist", tag)
 	}
 
-	t, err := template.ParseGlob(templateStr)
+	t := template.New("")
+	t, err := t.Parse(templateStr)
 	if err != nil {
 		return err.Error()
 	}
