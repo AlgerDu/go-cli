@@ -12,7 +12,8 @@ func NewBuilder(name string) AppBuilder {
 				DefaultFlags: nil,
 				Children:     map[string]*innerCommand{},
 			},
-			Version: "1.0.0",
+			Version:     "1.0.0",
+			GlobalFlags: []*flag{},
 		},
 	}
 }
@@ -46,6 +47,8 @@ func (builder *defaultBuilder) AddCommand(command Command, opt ...AddCommandOpti
 }
 
 func (builder *defaultBuilder) Build() App {
+
+	UseEN()
 
 	innerHelpCmd := newHelp(builder.app)
 	builder.AddCommand(innerHelpCmd)

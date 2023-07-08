@@ -1,11 +1,5 @@
 package cli
 
-import (
-	"bytes"
-	"fmt"
-	"text/template"
-)
-
 type (
 	I18nTag string
 )
@@ -13,31 +7,17 @@ type (
 var (
 	I18n = map[I18nTag]string{}
 
-	tag_HelpForCmd I18nTag = "help_for_cmd"
+	tag_OutputCmdHelp    I18nTag = "output_cmd_help"
+	tag_OutputSubCmdHelp I18nTag = "output_sub_cmd_help"
+
+	tag_HelpDescription    I18nTag = "help_description"
+	tag_VersionDescription I18nTag = "version_description"
 )
 
 func UseEN() {
-	I18n[tag_HelpForCmd] = template_en_HelpForCmd
-}
+	I18n[tag_OutputCmdHelp] = template_en_OutputCmdHelp
+	I18n[tag_OutputSubCmdHelp] = template_en_OutputSubCmdHelp
 
-func AnaylseTemplate(tag I18nTag, data any) string {
-
-	templateStr, exist := I18n[tag]
-	if !exist {
-		return fmt.Sprintf("tag [%s] is not exist", tag)
-	}
-
-	t := template.New("")
-	t, err := t.Parse(templateStr)
-	if err != nil {
-		return err.Error()
-	}
-
-	b := &bytes.Buffer{}
-	err = t.Execute(b, data)
-	if err != nil {
-		return err.Error()
-	}
-
-	return b.String()
+	I18n[tag_HelpDescription] = "show help"
+	I18n[tag_VersionDescription] = "show curr version"
 }

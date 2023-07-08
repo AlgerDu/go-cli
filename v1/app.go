@@ -8,7 +8,8 @@ import (
 type innerApp struct {
 	*innerCommand
 
-	Version string
+	Version     string
+	GlobalFlags []*flag
 }
 
 func (app *innerApp) Run(args []string) error {

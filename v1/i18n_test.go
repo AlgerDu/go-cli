@@ -8,23 +8,17 @@ func TestI18n_HelpForCmd(t *testing.T) {
 
 	UseEN()
 
-	data := &TempData_HelpForCmd{
+	data := &TempData_OutputCmdHelp{
 		Description: "abc",
 		CmdPath:     "hello",
-		SubCommands: []struct {
-			Name  string
-			Usage string
-		}{
+		Flags: []*TempData_Meta{
 			{
 				Name:  "student",
 				Usage: "hhhhhh",
 			},
 		},
 		SupportGlobalFlag: true,
-		GlobalFlags: []struct {
-			Name  string
-			Usage string
-		}{
+		GlobalFlags: []*TempData_Meta{
 			{
 				Name:  "-h",
 				Usage: "help",
@@ -32,6 +26,6 @@ func TestI18n_HelpForCmd(t *testing.T) {
 		},
 	}
 
-	value := AnaylseTemplate(tag_HelpForCmd, data)
+	value := AnalyseTemplate(tag_OutputCmdHelp, data)
 	t.Log(value)
 }
