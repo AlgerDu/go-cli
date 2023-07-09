@@ -53,5 +53,33 @@ func (builder *defaultBuilder) Build() App {
 	innerHelpCmd := newHelp(builder.app)
 	builder.AddCommand(innerHelpCmd)
 
+	builder.addGolbalFlags()
+
 	return builder.app
+}
+
+func (builder *defaultBuilder) addGolbalFlags() {
+
+	flags := []*flag{
+		{
+			FieldName: "help",
+			Name:      "--help",
+			Aliases:   []string{"-h"},
+			Default:   nil,
+			Require:   false,
+			Multiple:  false,
+			Usage:     "",
+		},
+		{
+			FieldName: "version",
+			Name:      "--version",
+			Aliases:   []string{"-v"},
+			Default:   nil,
+			Require:   false,
+			Multiple:  false,
+			Usage:     "",
+		},
+	}
+
+	builder.app.GlobalFlags = append(builder.app.GlobalFlags, flags...)
 }
