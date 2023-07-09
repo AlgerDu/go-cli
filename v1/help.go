@@ -73,16 +73,44 @@ func (cmd *HelpCommand) outputCmd(c *Context, toDescriptCmd *innerCommand) {
 		GlobalFlags:       []*TempData_Meta{},
 	}
 
+	data.Flags = cmd.fmtFlags(flags)
+	data.GlobalFlags = cmd.fmtFlags(cmd.app.GlobalFlags)
+
+	if len(data.GlobalFlags) > 0 {
+		data.SupportGlobalFlag = true
+	}
+
+	value := AnalyseTemplate(Tag_OutputCmdHelp, data)
+	c.Stdout.Print(value)
+}
+
+func (cmd *HelpCommand) outputSubCmds(c *Context, toDescriptCmd *innerCommand) error {
+	return nil
+}
+
+func (cmd *HelpCommand) fmtFlags(flags []*flag) []*TempData_Meta {
+
+	metas := []*TempData_Meta{}
+
 	fNameMax := 0
 	fDefaultMax := 0
 	fUsageMax := 0
+	defaultStr := I18n[Tag_Default]
 
 	for _, flag := range flags {
 
 		meta := &TempData_Meta{
 			Name:    strings.Join(append([]string{flag.Name}, flag.Aliases...), ","),
-			Usage:   flag.Usage,
 			Default: fmt.Sprintf("%v", flag.Default),
+			Usage:   flag.Usage,
+		}
+
+		if flag.Require {
+			meta.Default = ""
+		}
+
+		if len(meta.Default) > 0 {
+			meta.Default = fmt.Sprintf("[%s:%s]", defaultStr, meta.Default)
 		}
 
 		if len(meta.Name) > fNameMax {
@@ -95,20 +123,20 @@ func (cmd *HelpCommand) outputCmd(c *Context, toDescriptCmd *innerCommand) {
 			fUsageMax = len(meta.Usage)
 		}
 
-		data.Flags = append(data.Flags, meta)
+		metas = append(metas, meta)
 	}
 
-	for _, meta := range data.Flags {
-
-		meta.Name = fmt.Sprintf("%-"+strconv.Itoa(fNameMax+4)+"s", meta.Name)
-		meta.Default = fmt.Sprintf("%-"+strconv.Itoa(fDefaultMax+8)+"s", meta.Default)
-		meta.Usage = fmt.Sprintf("%-"+strconv.Itoa(fNameMax)+"s", meta.Usage)
+	fNameMax = fNameMax + 4
+	if fDefaultMax > 0 {
+		fDefaultMax = fDefaultMax + 8
 	}
 
-	value := AnalyseTemplate(tag_OutputCmdHelp, data)
-	c.Stdout.Print(value)
-}
+	for _, meta := range metas {
 
-func (cmd *HelpCommand) outputSubCmds(c *Context, toDescriptCmd *innerCommand) error {
-	return nil
+		meta.Name = fmt.Sprintf("%-"+strconv.Itoa(fNameMax)+"s", meta.Name)
+		meta.Default = fmt.Sprintf("%-"+strconv.Itoa(fDefaultMax)+"s", meta.Default)
+		meta.Usage = fmt.Sprintf("%-"+strconv.Itoa(fUsageMax)+"s", meta.Usage)
+	}
+
+	return metas
 }

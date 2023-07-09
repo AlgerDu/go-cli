@@ -26,6 +26,6 @@ func TestI18n_HelpForCmd(t *testing.T) {
 		},
 	}
 
-	value := AnalyseTemplate(tag_OutputCmdHelp, data)
+	value := AnalyseTemplate(Tag_OutputCmdHelp, data)
 	t.Log(value)
 }
