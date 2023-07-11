@@ -68,7 +68,7 @@ func (cmd *HelpCommand) Action(c *Context) error {
 	if len(toDescriptCmd.Children) > 0 {
 		cmd.outputSubCmds(c, toDescriptCmd)
 	} else {
-		cmd.outputCmd(c, toDescriptCmd)
+		cmd.outputCmd(c, flags, toDescriptCmd)
 	}
 
 	return nil
@@ -77,26 +77,31 @@ func (cmd *HelpCommand) Action(c *Context) error {
 func (cmd *HelpCommand) outputUnsupportCmd(stdout Stdout, paths []string) {
 }
 
-func (cmd *HelpCommand) outputCmd(c *Context, toDescriptCmd *innerCommand) {
+func (cmd *HelpCommand) outputCmd(c *Context, data *helpCommandFlag, toDescriptCmd *innerCommand) {
 
 	flags := c.anaylseCmdSupportFlags(*toDescriptCmd)
 
-	data := &TempData_OutputCmdHelp{
+	tempData := &TempData_OutputCmdHelp{
 		Description:       cmd.app.Usage,
-		CmdPath:           strings.Join(c.CommandPaths, " "),
+		CmdPath:           strings.Join(data.CmdPaths, " "),
 		Flags:             []*TempData_Meta{},
 		SupportGlobalFlag: false,
 		GlobalFlags:       []*TempData_Meta{},
 	}
 
-	data.Flags = cmd.fmtFlags(flags)
-	//data.GlobalFlags = cmd.fmtFlags(cmd.app.GlobalFlags)
+	tempData.Flags = cmd.fmtFlags(flags)
 
-	if len(data.GlobalFlags) > 0 {
-		data.SupportGlobalFlag = true
+	globalFlags := []*Flag{}
+	for _, gf := range cmd.app.GlobalFlags {
+		globalFlags = append(globalFlags, gf.Flag)
+	}
+	tempData.GlobalFlags = cmd.fmtFlags(globalFlags)
+
+	if len(tempData.GlobalFlags) > 0 {
+		tempData.SupportGlobalFlag = true
 	}
 
-	value := AnalyseTemplate(Tag_OutputCmdHelp, data)
+	value := AnalyseTemplate(Tag_OutputCmdHelp, tempData)
 	c.Stdout.Print(value)
 }
 
