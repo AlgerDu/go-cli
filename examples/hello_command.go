@@ -8,8 +8,8 @@ import (
 
 type (
 	HelloCommandFlags struct {
-		Name      string `cli:"name"`
-		ClassRoom string
+		Name      string
+		ClassRoom string `flag:"usage:学生的教师信息"`
 	}
 
 	HelloCommand struct {
@@ -19,7 +19,7 @@ type (
 
 var (
 	defaultHelloCommandFlags = &HelloCommandFlags{
-		Name: "",
+		Name: "ace",
 	}
 
 	helloCommand = &HelloCommand{
@@ -33,8 +33,8 @@ var (
 	}
 )
 
-func (cmd *HelloCommand) Action(c *cli.Context, flags any) error {
-	f := flags.(HelloCommandFlags)
+func (cmd *HelloCommand) Action(c *cli.Context) error {
+	f := c.Value.(HelloCommandFlags)
 	fmt.Printf("hello %s", f.Name)
 	return nil
 }

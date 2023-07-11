@@ -19,7 +19,7 @@ type (
 
 	GlobalFlag struct {
 		*Flag
-		Action CommandAction
+		Action PipelineAction
 	}
 
 	flagFieldAnaylser func(*Flag, string) error

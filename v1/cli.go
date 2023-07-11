@@ -7,13 +7,12 @@ type (
 		Aliases []string
 	}
 
-	CommandAction  func(*Context, any) error
 	PipelineAction func(*Context) error
 
 	Command interface {
 		GetDescripton() *CommandMeta
 		GetDefaultFlags() any
-		Action(c *Context, flags any) error
+		Action(c *Context) error
 	}
 
 	AddCommandOption func(CommandSettor)

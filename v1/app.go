@@ -10,6 +10,27 @@ type innerApp struct {
 
 	Version     string
 	GlobalFlags []*GlobalFlag
+
+	pipelines []PipelineAction
+}
+
+func newInnerApp() *innerApp {
+	app := &innerApp{
+		innerCommand: &innerCommand{
+			CommandMeta:  &CommandMeta{},
+			DefaultFlags: nil,
+			Children:     map[string]*innerCommand{},
+		},
+		Version:     "1.0.0",
+		GlobalFlags: []*GlobalFlag{},
+	}
+
+	app.pipelines = []PipelineAction{
+		app.checkGlobalFlags,
+		app.runCmd,
+	}
+
+	return app
 }
 
 func (app *innerApp) Run(args []string) error {
@@ -19,18 +40,15 @@ func (app *innerApp) Run(args []string) error {
 	context := newContext()
 	context.CommandPaths, context.UserSetFlags = app.anaylseArgs(args)
 
-	cmdPaths := context.CommandPaths
-
-	if app.isHelp(context) {
-		cmdPaths = []string{"help"}
+	var err error
+	for _, pipelineAction := range app.pipelines {
+		err = pipelineAction(context)
+		if err != nil {
+			break
+		}
 	}
 
-	cmd, exist := app.findCmd(cmdPaths...)
-	if !exist {
-		return nil
-	}
-
-	return cmd.Action(context, nil)
+	return err
 }
 
 func (app *innerApp) anaylseArgs(args []string) ([]string, map[string]string) {
@@ -65,25 +83,45 @@ func (app *innerApp) anaylseArgs(args []string) ([]string, map[string]string) {
 
 	}
 
-	return paths, flags
+	fmtFlags := map[string]string{}
+	for key, value := range flags {
+		fmtKey := strings.TrimLeft(key, "-")
+		fmtFlags[fmtKey] = value
+	}
+
+	return paths, fmtFlags
 }
 
-func (app *innerApp) isHelp(context *Context) bool {
+func (app *innerApp) checkGlobalFlags(context *Context) error {
 
-	for _, path := range context.CommandPaths {
-		if path == cmdName_Help {
-			return true
+	mapFlags := map[string]*GlobalFlag{}
+	for _, flag := range app.GlobalFlags {
+		mapFlags[flag.Name] = flag
+		if flag.Aliases != nil && len(flag.Aliases) > 0 {
+			for _, aliase := range flag.Aliases {
+				mapFlags[aliase] = flag
+			}
 		}
 	}
 
-	for flag := range context.UserSetFlags {
-		value, exist := helpCmdFlags[flag]
-		if exist && value {
-			return true
+	for key := range context.UserSetFlags {
+		flag, exist := mapFlags[key]
+		if exist {
+			return flag.Action(context)
 		}
 	}
+	return nil
+}
 
-	return false
+func (app *innerApp) runCmd(context *Context) error {
+
+	cmdPaths := context.CommandPaths
+	cmd, exist := app.findCmd(cmdPaths...)
+	if !exist {
+		return nil
+	}
+
+	return cmd.Action(context)
 }
 
 func (app *innerApp) findCmd(cmdPaths ...string) (*innerCommand, bool) {

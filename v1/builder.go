@@ -6,15 +6,7 @@ type defaultBuilder struct {
 
 func NewBuilder(name string) AppBuilder {
 	return &defaultBuilder{
-		app: &innerApp{
-			innerCommand: &innerCommand{
-				CommandMeta:  &CommandMeta{},
-				DefaultFlags: nil,
-				Children:     map[string]*innerCommand{},
-			},
-			Version:     "1.0.0",
-			GlobalFlags: []*GlobalFlag{},
-		},
+		app: newInnerApp(),
 	}
 }
 
@@ -49,9 +41,15 @@ func (builder *defaultBuilder) AddCommand(command Command, opt ...AddCommandOpti
 func (builder *defaultBuilder) Build() App {
 
 	UseEN()
+	builder.useHelp()
+
+	return builder.app
+}
+
+func (builder *defaultBuilder) useHelp() {
+
+	builder.app.GlobalFlags = append(builder.app.GlobalFlags, helpGloblaFlag)
 
 	innerHelpCmd := newHelp(builder.app)
 	builder.AddCommand(innerHelpCmd)
-
-	return builder.app
 }

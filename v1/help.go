@@ -7,6 +7,10 @@ import (
 )
 
 type (
+	helpCommandFlag struct {
+		CmdPaths []string
+	}
+
 	HelpCommand struct {
 		*BaseCommand
 
@@ -16,11 +20,26 @@ type (
 
 var (
 	cmdName_Help = "help"
-	helpCmdFlags = map[string]bool{
-		"-h":     true,
-		"--help": true,
+
+	helpGloblaFlag = &GlobalFlag{
+		Flag: &Flag{
+			FieldName: "",
+			Name:      cmdName_Help,
+			Aliases:   []string{"h"},
+		},
+		Action: helpGlobalFlagAction,
 	}
 )
+
+func helpGlobalFlagAction(context *Context) error {
+
+	context.Value = &helpCommandFlag{
+		CmdPaths: context.CommandPaths,
+	}
+	context.CommandPaths = []string{cmdName_Help}
+
+	return nil
+}
 
 func newHelp(
 	app *innerApp,
@@ -36,10 +55,13 @@ func newHelp(
 	}
 }
 
-func (cmd *HelpCommand) Action(c *Context, flags any) error {
-	toDescriptCmd, exist := cmd.app.findCmd(c.CommandPaths...)
+func (cmd *HelpCommand) Action(c *Context) error {
+
+	flags := c.Value.(*helpCommandFlag)
+
+	toDescriptCmd, exist := cmd.app.findCmd(flags.CmdPaths...)
 	if !exist {
-		cmd.outputUnsupportCmd(c.Stdout, c.CommandPaths)
+		cmd.outputUnsupportCmd(c.Stdout, flags.CmdPaths)
 		return nil
 	}
 
@@ -53,12 +75,6 @@ func (cmd *HelpCommand) Action(c *Context, flags any) error {
 }
 
 func (cmd *HelpCommand) outputUnsupportCmd(stdout Stdout, paths []string) {
-
-	stdout.
-		Println("ERROR:").
-		Scope(DefaultScopeWord).
-		Printfln("unsupport cmd %v", paths).
-		NewLline()
 }
 
 func (cmd *HelpCommand) outputCmd(c *Context, toDescriptCmd *innerCommand) {

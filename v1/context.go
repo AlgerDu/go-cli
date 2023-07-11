@@ -18,12 +18,12 @@ type (
 	}
 
 	Context struct {
-		WorkDir string
-
+		WorkDir      string
 		CommandPaths []string
 		UserSetFlags map[string]string
+		Stdout       Stdout
 
-		Stdout Stdout
+		Value any
 	}
 )
 

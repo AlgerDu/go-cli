@@ -3,7 +3,7 @@ package cli
 type innerCommand struct {
 	*CommandMeta
 
-	Action       CommandAction
+	Action       PipelineAction
 	DefaultFlags any
 	Children     map[string]*innerCommand
 }
