@@ -41,6 +41,6 @@ func newContext() *Context {
 	}
 }
 
-func (context *Context) anaylseCmdSupportFlags(cmd innerCommand) []*flag {
+func (context *Context) anaylseCmdSupportFlags(cmd innerCommand) []*Flag {
 	return anaylseFlags(cmd.DefaultFlags)
 }

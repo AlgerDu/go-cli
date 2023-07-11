@@ -74,7 +74,7 @@ func (cmd *HelpCommand) outputCmd(c *Context, toDescriptCmd *innerCommand) {
 	}
 
 	data.Flags = cmd.fmtFlags(flags)
-	data.GlobalFlags = cmd.fmtFlags(cmd.app.GlobalFlags)
+	//data.GlobalFlags = cmd.fmtFlags(cmd.app.GlobalFlags)
 
 	if len(data.GlobalFlags) > 0 {
 		data.SupportGlobalFlag = true
@@ -88,7 +88,7 @@ func (cmd *HelpCommand) outputSubCmds(c *Context, toDescriptCmd *innerCommand) e
 	return nil
 }
 
-func (cmd *HelpCommand) fmtFlags(flags []*flag) []*TempData_Meta {
+func (cmd *HelpCommand) fmtFlags(flags []*Flag) []*TempData_Meta {
 
 	metas := []*TempData_Meta{}
 

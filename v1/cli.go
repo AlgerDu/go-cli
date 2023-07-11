@@ -7,7 +7,8 @@ type (
 		Aliases []string
 	}
 
-	CommandAction func(*Context, any) error
+	CommandAction  func(*Context, any) error
+	PipelineAction func(*Context) error
 
 	Command interface {
 		GetDescripton() *CommandMeta
@@ -31,8 +32,4 @@ type (
 		AddCommand(Command, ...AddCommandOption) AppBuilder
 		Build() App
 	}
-)
-
-var (
-	DefaultScopeWord = "   "
 )

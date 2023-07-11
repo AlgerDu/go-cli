@@ -9,7 +9,7 @@ type innerApp struct {
 	*innerCommand
 
 	Version     string
-	GlobalFlags []*flag
+	GlobalFlags []*GlobalFlag
 }
 
 func (app *innerApp) Run(args []string) error {

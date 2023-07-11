@@ -7,7 +7,7 @@ import (
 )
 
 type (
-	flag struct {
+	Flag struct {
 		FieldName string
 		Name      string
 		Aliases   []string
@@ -17,7 +17,12 @@ type (
 		Usage     string
 	}
 
-	flagFieldAnaylser func(*flag, string) error
+	GlobalFlag struct {
+		*Flag
+		Action CommandAction
+	}
+
+	flagFieldAnaylser func(*Flag, string) error
 
 	flagFieldAnaylsers struct {
 		UserSet flagFieldAnaylser
@@ -55,7 +60,7 @@ var (
 	}
 )
 
-func anaylseFlags(flagDefaultValue any) []*flag {
+func anaylseFlags(flagDefaultValue any) []*Flag {
 
 	dstType := reflect.TypeOf(flagDefaultValue)
 	defaultValue := reflect.ValueOf(flagDefaultValue)
@@ -66,12 +71,12 @@ func anaylseFlags(flagDefaultValue any) []*flag {
 	}
 
 	fieldCout := dstType.NumField()
-	flags := []*flag{}
+	flags := []*Flag{}
 
 	for i := 0; i < fieldCout; i++ {
 		field := dstType.Field(i)
 		tag := field.Tag.Get(flagTagName)
-		flag := &flag{}
+		flag := &Flag{}
 		sets := map[string]string{}
 		tagSets := strings.Split(tag, ",")
 
@@ -114,41 +119,41 @@ func anaylseFlags(flagDefaultValue any) []*flag {
 	return flags
 }
 
-func ffa_Name_UserSet(flag *flag, value string) error {
+func ffa_Name_UserSet(flag *Flag, value string) error {
 	flag.Name = value
 	return nil
 }
 
-func ffa_Name_Default(flag *flag, value string) error {
+func ffa_Name_Default(flag *Flag, value string) error {
 	flag.Name = Ext_StringTo(value)
 	return nil
 }
 
-func ffa_Aliases_UserSet(flag *flag, value string) error {
+func ffa_Aliases_UserSet(flag *Flag, value string) error {
 	flag.Aliases = strings.Split(value, "|")
 	return nil
 }
 
-func ffa_Aliases_Default(flag *flag, value string) error {
+func ffa_Aliases_Default(flag *Flag, value string) error {
 	return nil
 }
 
-func ffa_Require_UserSet(flag *flag, value string) error {
+func ffa_Require_UserSet(flag *Flag, value string) error {
 	flag.Require = true
 	return nil
 }
 
-func ffa_Require_Default(flag *flag, value string) error {
+func ffa_Require_Default(flag *Flag, value string) error {
 	flag.Require = false
 	return nil
 }
 
-func ffa_Usage_UserSet(flag *flag, value string) error {
+func ffa_Usage_UserSet(flag *Flag, value string) error {
 	flag.Usage = value
 	return nil
 }
 
-func ffa_Usage_Default(flag *flag, value string) error {
+func ffa_Usage_Default(flag *Flag, value string) error {
 	flag.Usage = value
 	return nil
 }
