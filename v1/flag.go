@@ -147,6 +147,6 @@ func ffa_Usage_UserSet(flag *Flag, value string) error {
 }
 
 func ffa_Usage_Default(flag *Flag, value string) error {
-	flag.Usage = value
+	flag.Usage = Ext_StringTo(value)
 	return nil
 }

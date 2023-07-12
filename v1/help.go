@@ -66,7 +66,7 @@ func (cmd *HelpCommand) Action(c *Context) error {
 	}
 
 	if len(toDescriptCmd.Children) > 0 {
-		cmd.outputSubCmds(c, toDescriptCmd)
+		cmd.outputSubCmds(c, flags, toDescriptCmd)
 	} else {
 		cmd.outputCmd(c, flags, toDescriptCmd)
 	}
@@ -105,7 +105,30 @@ func (cmd *HelpCommand) outputCmd(c *Context, data *helpCommandFlag, toDescriptC
 	c.Stdout.Print(value)
 }
 
-func (cmd *HelpCommand) outputSubCmds(c *Context, toDescriptCmd *innerCommand) error {
+func (cmd *HelpCommand) outputSubCmds(c *Context, data *helpCommandFlag, toDescriptCmd *innerCommand) error {
+
+	tempData := &TempData_OutputSubCmdHelp{
+		Description:       cmd.app.Usage,
+		CmdPath:           strings.Join(data.CmdPaths, " "),
+		SubCommands:       []*TempData_Meta{},
+		SupportGlobalFlag: false,
+		GlobalFlags:       []*TempData_Meta{},
+	}
+
+	tempData.SubCommands = cmd.fmtSubCmds(toDescriptCmd.Children)
+
+	globalFlags := []*Flag{}
+	for _, gf := range cmd.app.GlobalFlags {
+		globalFlags = append(globalFlags, gf.Flag)
+	}
+	tempData.GlobalFlags = cmd.fmtFlags(globalFlags)
+
+	if len(tempData.GlobalFlags) > 0 {
+		tempData.SupportGlobalFlag = true
+	}
+
+	value := AnalyseTemplate(Tag_OutputSubCmdHelp, tempData)
+	c.Stdout.Print(value)
 	return nil
 }
 
@@ -136,11 +159,11 @@ func (cmd *HelpCommand) fmtFlags(flags []*Flag) []*TempData_Meta {
 		}
 
 		if flag.Require {
-			meta.Default = ""
-		}
-
-		if len(meta.Default) > 0 {
-			meta.Default = fmt.Sprintf("[%s:%s]", defaultStr, meta.Default)
+			meta.Default = "require"
+		} else {
+			if len(meta.Default) > 0 {
+				meta.Default = fmt.Sprintf("[%s:%s]", defaultStr, meta.Default)
+			}
 		}
 
 		fNameMax = Ext_Max(fNameMax, len(meta.Name))
@@ -179,4 +202,44 @@ func (cmd *HelpCommand) fmtFlagKeys(flag *Flag) string {
 	}
 
 	return strings.Join(keys, ",")
+}
+
+func (cmd *HelpCommand) fmtSubCmds(cmds map[string]*innerCommand) []*TempData_Meta {
+
+	metas := []*TempData_Meta{}
+
+	fNameMax := 0
+	fUsageMax := 0
+
+	for _, cmd := range cmds {
+
+		usage := cmd.Usage
+		if len(usage) == 0 {
+			usage = cmd.Name
+		}
+		usageI18nValue, exist := I18n[I18nTag(usage)]
+		if exist {
+			usage = usageI18nValue
+		}
+
+		meta := &TempData_Meta{
+			Name:  strings.Join(append([]string{cmd.Name}, cmd.Aliases...), ","),
+			Usage: usage,
+		}
+
+		fNameMax = Ext_Max(fNameMax, len(meta.Name))
+		fUsageMax = Ext_Max(fUsageMax, len(meta.Usage))
+
+		metas = append(metas, meta)
+	}
+
+	fNameMax = fNameMax + 8
+
+	for _, meta := range metas {
+
+		meta.Name = fmt.Sprintf("%-"+strconv.Itoa(fNameMax)+"s", meta.Name)
+		meta.Usage = fmt.Sprintf("%-"+strconv.Itoa(fUsageMax)+"s", meta.Usage)
+	}
+
+	return metas
 }

@@ -85,6 +85,7 @@ Commands:
 {{- end }}
 
 {{- if .SupportGlobalFlag }}
+
 Global Flags:
 {{- range .GlobalFlags }}
     {{ .Name }}{{ .Usage }}
