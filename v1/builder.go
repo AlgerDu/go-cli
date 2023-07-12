@@ -42,6 +42,7 @@ func (builder *defaultBuilder) Build() App {
 
 	UseEN()
 	builder.useHelp()
+	builder.useVersion()
 
 	return builder.app
 }
@@ -51,5 +52,13 @@ func (builder *defaultBuilder) useHelp() {
 	builder.app.GlobalFlags = append(builder.app.GlobalFlags, helpGloblaFlag)
 
 	innerHelpCmd := newHelp(builder.app)
+	builder.AddCommand(innerHelpCmd)
+}
+
+func (builder *defaultBuilder) useVersion() {
+
+	builder.app.GlobalFlags = append(builder.app.GlobalFlags, versionGloblaFlag)
+
+	innerHelpCmd := newVersion(builder.app)
 	builder.AddCommand(innerHelpCmd)
 }

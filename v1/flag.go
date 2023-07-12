@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 )
@@ -98,12 +97,6 @@ func anaylseFlags(flagDefaultValue any) []*Flag {
 			} else {
 				handlers.Defaut(flag, field.Name)
 			}
-		}
-
-		if len(flag.Name) > 1 {
-			flag.Name = fmt.Sprintf("--%s", flag.Name)
-		} else {
-			flag.Name = fmt.Sprintf("-%s", flag.Name)
 		}
 
 		flag.FieldName = field.Name

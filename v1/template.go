@@ -50,6 +50,10 @@ type (
 		SupportGlobalFlag bool
 		GlobalFlags       []*TempData_Meta
 	}
+
+	TempData_Version struct {
+		Version string
+	}
 )
 
 var (
@@ -87,4 +91,6 @@ Global Flags:
 {{- end }}
 {{- end }}
 `
+
+	template_en_OutputVersion = `Version: {{ .Version }}`
 )

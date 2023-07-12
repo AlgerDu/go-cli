@@ -121,7 +121,7 @@ func (cmd *HelpCommand) fmtFlags(flags []*Flag) []*TempData_Meta {
 	for _, flag := range flags {
 
 		meta := &TempData_Meta{
-			Name:    strings.Join(append([]string{flag.Name}, flag.Aliases...), ","),
+			Name:    cmd.fmtFlagKeys(flag),
 			Default: fmt.Sprintf("%v", flag.Default),
 			Usage:   flag.Usage,
 		}
@@ -160,4 +160,20 @@ func (cmd *HelpCommand) fmtFlags(flags []*Flag) []*TempData_Meta {
 	}
 
 	return metas
+}
+
+func (cmd *HelpCommand) fmtFlagKeys(flag *Flag) string {
+
+	keys := []string{flag.Name}
+	keys = append(keys, flag.Aliases...)
+
+	for i, key := range keys {
+		if len(key) > 1 {
+			keys[i] = fmt.Sprintf("--%s", key)
+		} else {
+			keys[i] = fmt.Sprintf("-%s", key)
+		}
+	}
+
+	return strings.Join(keys, ",")
 }
