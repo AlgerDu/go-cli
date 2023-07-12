@@ -134,15 +134,9 @@ func (cmd *HelpCommand) fmtFlags(flags []*Flag) []*TempData_Meta {
 			meta.Default = fmt.Sprintf("[%s:%s]", defaultStr, meta.Default)
 		}
 
-		if len(meta.Name) > fNameMax {
-			fNameMax = len(meta.Name)
-		}
-		if len(meta.Default) > fDefaultMax {
-			fDefaultMax = len(meta.Default)
-		}
-		if len(meta.Usage) > fUsageMax {
-			fUsageMax = len(meta.Usage)
-		}
+		fNameMax = Ext_Max(fNameMax, len(meta.Name))
+		fDefaultMax = Ext_Max(fDefaultMax, len(meta.Default))
+		fUsageMax = Ext_Max(fUsageMax, len(meta.Usage))
 
 		metas = append(metas, meta)
 	}

@@ -63,3 +63,10 @@ func Ext_TypeIsArray(t reflect.Type) bool {
 
 	return false
 }
+
+func Ext_Max(l, r int) int {
+	if l > r {
+		return l
+	}
+	return r
+}
