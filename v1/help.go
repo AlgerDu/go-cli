@@ -120,10 +120,19 @@ func (cmd *HelpCommand) fmtFlags(flags []*Flag) []*TempData_Meta {
 
 	for _, flag := range flags {
 
+		usage := flag.Usage
+		if len(usage) == 0 {
+			usage = flag.Name
+		}
+		usageI18nValue, exist := I18n[I18nTag(usage)]
+		if exist {
+			usage = usageI18nValue
+		}
+
 		meta := &TempData_Meta{
 			Name:    cmd.fmtFlagKeys(flag),
 			Default: fmt.Sprintf("%v", flag.Default),
-			Usage:   flag.Usage,
+			Usage:   usage,
 		}
 
 		if flag.Require {

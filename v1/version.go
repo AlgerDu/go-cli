@@ -10,6 +10,7 @@ type (
 
 var (
 	cmdName_Version = "version"
+	i18n_en_version = "show version"
 
 	versionGloblaFlag = &GlobalFlag{
 		Flag: &Flag{

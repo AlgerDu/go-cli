@@ -57,6 +57,8 @@ func (builder *defaultBuilder) useHelp() {
 
 func (builder *defaultBuilder) useVersion() {
 
+	I18n[I18nTag(cmdName_Version)] = i18n_en_version
+
 	builder.app.GlobalFlags = append(builder.app.GlobalFlags, versionGloblaFlag)
 
 	innerHelpCmd := newVersion(builder.app)
