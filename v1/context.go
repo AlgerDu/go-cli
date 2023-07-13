@@ -42,5 +42,5 @@ func newContext() *Context {
 }
 
 func (context *Context) anaylseCmdSupportFlags(cmd innerCommand) []*Flag {
-	return anaylseFlags(cmd.DefaultFlags)
+	return anaylseFlags("", cmd.DefaultFlags)
 }

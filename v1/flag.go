@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 )
@@ -59,7 +60,7 @@ var (
 	}
 )
 
-func anaylseFlags(flagDefaultValue any) []*Flag {
+func anaylseFlags(parentPath string, flagDefaultValue any) []*Flag {
 
 	dstType := reflect.TypeOf(flagDefaultValue)
 	defaultValue := reflect.ValueOf(flagDefaultValue)
@@ -74,6 +75,30 @@ func anaylseFlags(flagDefaultValue any) []*Flag {
 
 	for i := 0; i < fieldCout; i++ {
 		field := dstType.Field(i)
+
+		fieldPath := field.Name
+		if len(parentPath) > 0 {
+			fieldPath = fmt.Sprintf("%s.%s", parentPath, fieldPath)
+		}
+
+		rv := defaultValue.Field(i)
+		var fieldValue any
+		if rv.CanInterface() {
+			fieldValue = rv.Interface()
+		} else {
+			continue
+		}
+
+		fieldType := field.Type
+		if fieldType.Kind() == reflect.Pointer {
+			fieldType = fieldType.Elem()
+		}
+
+		if fieldType.Kind() == reflect.Struct {
+			flags = append(flags, anaylseFlags(fieldPath, fieldValue)...)
+			continue
+		}
+
 		tag := field.Tag.Get(flagTagName)
 		flag := &Flag{}
 		sets := map[string]string{}
@@ -99,7 +124,7 @@ func anaylseFlags(flagDefaultValue any) []*Flag {
 			}
 		}
 
-		flag.FieldName = field.Name
+		flag.FieldName = fieldPath
 		flag.Default = defaultValue.Field(i).Interface()
 
 		if Ext_TypeIsArray(field.Type) {

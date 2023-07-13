@@ -64,6 +64,21 @@ func Ext_TypeIsArray(t reflect.Type) bool {
 	return false
 }
 
+func Ext_TypeIsStruct(t reflect.Type) bool {
+
+	typeKind := t.Kind()
+
+	if typeKind == reflect.Pointer {
+		typeKind = t.Elem().Kind()
+	}
+
+	if typeKind == reflect.Struct {
+		return true
+	}
+
+	return false
+}
+
 func Ext_Max(l, r int) int {
 	if l > r {
 		return l

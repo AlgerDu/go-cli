@@ -2,6 +2,7 @@ package cli
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 )
 
@@ -12,7 +13,7 @@ type exampleFlag struct {
 
 func TestAnaylseFlag(t *testing.T) {
 
-	flags := anaylseFlags(&exampleFlag{
+	flags := anaylseFlags("", &exampleFlag{
 		HasChild: true,
 	})
 
@@ -32,7 +33,7 @@ type arrayFlag struct {
 
 func TestFlag_ArrayField(t *testing.T) {
 
-	flags := anaylseFlags(&arrayFlag{})
+	flags := anaylseFlags("", &arrayFlag{})
 
 	if len(flags) <= 0 {
 		t.Error("flags length <= 0")
@@ -41,4 +42,37 @@ func TestFlag_ArrayField(t *testing.T) {
 	if flags[0].Multiple == false {
 		t.Error("flags 0 is not multiple")
 	}
+}
+
+type People struct {
+	Name string
+}
+
+type student struct {
+	*People
+	ClassRoom string
+}
+
+func TestFlag_EmbedField(t *testing.T) {
+
+	flags := anaylseFlags("", &student{
+		People: &People{
+			Name: "",
+		},
+		ClassRoom: "",
+	})
+
+	if len(flags) <= 0 {
+		t.Error("flags length <= 0")
+	}
+
+	for _, flag := range flags {
+		value, _ := json.Marshal(flag)
+		t.Log(string(value))
+	}
+}
+
+func TestFlag_StringJoin(t *testing.T) {
+	value := strings.Join([]string{"", "abc"}, ",")
+	t.Log(value)
 }
