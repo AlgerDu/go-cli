@@ -1,8 +1,10 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -58,6 +60,9 @@ var (
 			Defaut:  ffa_Usage_Default,
 		},
 	}
+
+	ErrNoField             = errors.New("no field")
+	ErrNotSupportFieldType = errors.New("not support field type")
 )
 
 func anaylseFlags(parentPath string, flagDefaultValue any) []*Flag {
@@ -135,6 +140,47 @@ func anaylseFlags(parentPath string, flagDefaultValue any) []*Flag {
 	}
 
 	return flags
+}
+
+func bindFlagsToStruct(value string, flag *Flag, dst any) error {
+
+	dstValue := reflect.ValueOf(dst)
+	if dstValue.Kind() == reflect.Pointer {
+		dstValue = dstValue.Elem()
+	}
+
+	names := strings.Split(flag.FieldName, ".")
+	fieldValue := dstValue
+
+	for _, name := range names {
+		fieldValue = fieldValue.FieldByName(name)
+
+		if fieldValue == (reflect.Value{}) {
+			return ErrNoField
+		}
+
+		if fieldValue.Kind() == reflect.Pointer && fieldValue.IsNil() {
+			fieldValue.Set(reflect.New(fieldValue.Type().Elem()))
+			fieldValue = fieldValue.Elem()
+		}
+	}
+
+	var v any
+	var err error
+
+	switch fieldValue.Kind() {
+	case reflect.Bool:
+		v, err = strconv.ParseBool(value)
+	default:
+		return ErrNotSupportFieldType
+	}
+
+	if err != nil {
+		return err
+	}
+
+	fieldValue.Set(reflect.ValueOf(v))
+	return nil
 }
 
 func ffa_Name_UserSet(flag *Flag, value string) error {

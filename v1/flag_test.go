@@ -76,3 +76,29 @@ func TestFlag_StringJoin(t *testing.T) {
 	value := strings.Join([]string{"", "abc"}, ",")
 	t.Log(value)
 }
+
+type toSetFlags struct {
+	IsStudent bool
+}
+
+func TestFlag_SetBool(t *testing.T) {
+	dst := &toSetFlags{}
+	flag := &Flag{
+		FieldName: "IsStudent",
+		Name:      "",
+		Aliases:   []string{},
+		Default:   false,
+		Require:   false,
+		Multiple:  false,
+		Usage:     "",
+	}
+
+	err := bindFlagsToStruct("true", flag, dst)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if !dst.IsStudent {
+		t.Errorf("IsStudent support to true but is flase")
+	}
+}
