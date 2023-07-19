@@ -27,6 +27,8 @@ func newInnerApp() *innerApp {
 
 	app.pipelines = []PipelineAction{
 		app.checkGlobalFlags,
+		app.findCmdPipelineAction,
+		app.resolveFlagStruct,
 		app.runCmd,
 	}
 
@@ -51,12 +53,12 @@ func (app *innerApp) Run(args []string) error {
 	return err
 }
 
-func (app *innerApp) anaylseArgs(args []string) ([]string, map[string]string) {
+func (app *innerApp) anaylseArgs(args []string) ([]string, UserSetFlags) {
 
 	args = args[1:]
 
 	paths := []string{}
-	flags := map[string]string{}
+	flags := UserSetFlags{}
 	count := len(args)
 
 	for i := 0; i < count; i++ {
@@ -66,15 +68,13 @@ func (app *innerApp) anaylseArgs(args []string) ([]string, map[string]string) {
 			if i+1 < count {
 				nextWord := args[i+1]
 				if strings.HasPrefix(nextWord, "-") {
-
-					flags[word] = ""
+					flags.Set(word, "")
 				} else {
-
-					flags[word] = nextWord
+					flags.Set(word, nextWord)
 					i++
 				}
 			} else {
-				flags[word] = ""
+				flags.Set(word, "")
 			}
 
 		} else {
@@ -83,7 +83,7 @@ func (app *innerApp) anaylseArgs(args []string) ([]string, map[string]string) {
 
 	}
 
-	fmtFlags := map[string]string{}
+	fmtFlags := UserSetFlags{}
 	for key, value := range flags {
 		fmtKey := strings.TrimLeft(key, "-")
 		fmtFlags[fmtKey] = value
@@ -113,15 +113,26 @@ func (app *innerApp) checkGlobalFlags(context *Context) error {
 	return nil
 }
 
-func (app *innerApp) runCmd(context *Context) error {
+func (app *innerApp) findCmdPipelineAction(context *Context) error {
 
-	cmdPaths := context.CommandPaths
-	cmd, exist := app.findCmd(cmdPaths...)
+	cmd, exist := app.findCmd(context.CommandPaths...)
 	if !exist {
-		return nil
+		return fmt.Errorf("no command for %v", context.CommandPaths)
 	}
 
-	return cmd.Action(context)
+	context.toRunCmd = cmd
+	return nil
+}
+
+func (app *innerApp) resolveFlagStruct(context *Context) error {
+
+	// supportFlags := context.anaylseCmdSupportFlags(context.toRunCmd)
+
+	return nil
+}
+
+func (app *innerApp) runCmd(context *Context) error {
+	return context.toRunCmd.Action(context)
 }
 
 func (app *innerApp) findCmd(cmdPaths ...string) (*innerCommand, bool) {

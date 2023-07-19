@@ -20,10 +20,12 @@ type (
 	Context struct {
 		WorkDir      string
 		CommandPaths []string
-		UserSetFlags map[string]string
+		UserSetFlags UserSetFlags
 		Stdout       Stdout
 
 		Value any
+
+		toRunCmd *innerCommand
 	}
 )
 
@@ -35,12 +37,12 @@ func newContext() *Context {
 		WorkDir: wd,
 
 		CommandPaths: []string{},
-		UserSetFlags: map[string]string{},
+		UserSetFlags: map[string][]string{},
 
 		Stdout: newStdout(),
 	}
 }
 
-func (context *Context) anaylseCmdSupportFlags(cmd innerCommand) []*Flag {
+func (context *Context) anaylseCmdSupportFlags(cmd *innerCommand) []*Flag {
 	return anaylseFlags("", cmd.DefaultFlags)
 }
