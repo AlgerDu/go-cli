@@ -1,6 +1,9 @@
 package cli
 
-import "reflect"
+import (
+	"reflect"
+	"strconv"
+)
 
 func Ext_StringTo(value string) string {
 
@@ -84,4 +87,26 @@ func Ext_Max(l, r int) int {
 		return l
 	}
 	return r
+}
+
+func Ext_StringToValue(value string, kind reflect.Kind) (reflect.Value, error) {
+	var v any
+	var err error
+
+	switch kind {
+	case reflect.Bool:
+		v, err = strconv.ParseBool(value)
+	case reflect.String:
+		v = value
+	case reflect.Int:
+		v, err = strconv.Atoi(value)
+	default:
+		return reflect.Value{}, ErrNotSupportFieldType
+	}
+
+	if err != nil {
+		return reflect.Value{}, err
+	}
+
+	return reflect.ValueOf(v), nil
 }

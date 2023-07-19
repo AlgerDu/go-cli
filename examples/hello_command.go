@@ -8,7 +8,7 @@ import (
 
 type (
 	HelloCommandFlags struct {
-		Name      string
+		Name      string `flag:"require"`
 		ClassRoom string `flag:"usage:学生的教师信息"`
 	}
 

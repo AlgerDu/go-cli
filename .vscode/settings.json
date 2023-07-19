@@ -1,5 +1,7 @@
 {
     "go.testFlags": [
         "-v"
-    ]
+    ],
+    "editor.lineHeight": 24,
+    "terminal.integrated.lineHeight": 1.3
 }

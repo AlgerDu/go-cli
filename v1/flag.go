@@ -4,8 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
+
+	"github.com/AlgerDu/go-cli/v1/exts"
 )
 
 type (
@@ -66,6 +67,10 @@ var (
 )
 
 func anaylseFlags(parentPath string, flagDefaultValue any) []*Flag {
+
+	if flagDefaultValue == nil {
+		return []*Flag{}
+	}
 
 	dstType := reflect.TypeOf(flagDefaultValue)
 	defaultValue := reflect.ValueOf(flagDefaultValue)
@@ -156,30 +161,24 @@ func bindFlagsToStruct(value string, flag *Flag, dst any) error {
 		fieldValue = fieldValue.FieldByName(name)
 
 		if fieldValue == (reflect.Value{}) {
-			return ErrNoField
+			return exts.ErrStructFieldNotExist
 		}
 
-		if fieldValue.Kind() == reflect.Pointer && fieldValue.IsNil() {
-			fieldValue.Set(reflect.New(fieldValue.Type().Elem()))
-			fieldValue = fieldValue.Elem()
+		if exts.Reflect_IsNil(fieldValue) {
+			vt := fieldValue.Type()
+			if vt.Kind() == reflect.Pointer {
+				vt = vt.Elem()
+			}
+			fieldValue.Set(exts.Reflect_New(vt))
 		}
 	}
 
-	var v any
-	var err error
-
-	switch fieldValue.Kind() {
-	case reflect.Bool:
-		v, err = strconv.ParseBool(value)
-	default:
-		return ErrNotSupportFieldType
-	}
-
+	v, err := exts.Reflect_ParseString(value, fieldValue.Kind())
 	if err != nil {
 		return err
 	}
 
-	fieldValue.Set(reflect.ValueOf(v))
+	fieldValue.Set(v)
 	return nil
 }
 

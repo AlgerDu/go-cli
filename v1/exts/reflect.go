@@ -57,3 +57,17 @@ func Reflect_IsNil(v reflect.Value) bool {
 
 	return false
 }
+
+func Reflect_IsArray(t reflect.Type) bool {
+	typeKind := t.Kind()
+
+	if typeKind == reflect.Pointer {
+		typeKind = t.Elem().Kind()
+	}
+
+	if typeKind == reflect.Array || typeKind == reflect.Slice {
+		return true
+	}
+
+	return false
+}

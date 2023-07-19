@@ -79,7 +79,7 @@ func (cmd *HelpCommand) outputUnsupportCmd(stdout Stdout, paths []string) {
 
 func (cmd *HelpCommand) outputCmd(c *Context, data *helpCommandFlag, toDescriptCmd *innerCommand) {
 
-	flags := c.anaylseCmdSupportFlags(*toDescriptCmd)
+	flags := c.anaylseCmdSupportFlags(toDescriptCmd)
 
 	tempData := &TempData_OutputCmdHelp{
 		Description:       cmd.app.Usage,
