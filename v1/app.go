@@ -2,7 +2,10 @@ package cli
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
+
+	"github.com/AlgerDu/go-cli/v1/exts"
 )
 
 type innerApp struct {
@@ -126,8 +129,41 @@ func (app *innerApp) findCmdPipelineAction(context *Context) error {
 
 func (app *innerApp) resolveFlagStruct(context *Context) error {
 
-	// supportFlags := context.anaylseCmdSupportFlags(context.toRunCmd)
+	supportFlags := context.anaylseCmdSupportFlags(context.toRunCmd)
+	ctxValue := exts.Reflect_New(reflect.TypeOf(context.toRunCmd.DefaultFlags).Elem()).Interface()
 
+	for _, flag := range supportFlags {
+		userSetValaues := []string{}
+		vs, exist := context.UserSetFlags[flag.Name]
+		if exist {
+			userSetValaues = append(userSetValaues, vs...)
+			delete(context.UserSetFlags, flag.Name)
+		}
+		for _, aliase := range flag.Aliases {
+			vs, exist = context.UserSetFlags[aliase]
+			if exist {
+				userSetValaues = append(userSetValaues, vs...)
+				delete(context.UserSetFlags, aliase)
+			}
+		}
+
+		if len(userSetValaues) > 1 && !flag.Multiple {
+			return fmt.Errorf("flag %s not support multiple set", flag.Name)
+		}
+
+		for _, v := range userSetValaues {
+			err := bindFlagsToStruct(v, flag, ctxValue)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	if len(context.UserSetFlags) > 0 {
+		return fmt.Errorf("cmd not support flag %s", context.UserSetFlags)
+	}
+
+	context.Value = ctxValue
 	return nil
 }
 
