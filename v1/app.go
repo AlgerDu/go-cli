@@ -133,18 +133,29 @@ func (app *innerApp) resolveFlagStruct(context *Context) error {
 	ctxValue := exts.Reflect_New(reflect.TypeOf(context.toRunCmd.DefaultFlags).Elem()).Interface()
 
 	for _, flag := range supportFlags {
+		set := false
 		userSetValaues := []string{}
 		vs, exist := context.UserSetFlags[flag.Name]
 		if exist {
+			set = true
 			userSetValaues = append(userSetValaues, vs...)
 			delete(context.UserSetFlags, flag.Name)
 		}
 		for _, aliase := range flag.Aliases {
 			vs, exist = context.UserSetFlags[aliase]
 			if exist {
+				set = true
 				userSetValaues = append(userSetValaues, vs...)
 				delete(context.UserSetFlags, aliase)
 			}
+		}
+
+		if !set && flag.Require {
+			return fmt.Errorf("flag %s must set value", flag.Name)
+		}
+
+		if !set {
+			userSetValaues = append(userSetValaues, fmt.Sprintf("%v", flag.Default))
 		}
 
 		if len(userSetValaues) > 1 && !flag.Multiple {
