@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/AlgerDu/go-cli/v1"
@@ -13,5 +14,8 @@ func main() {
 		AddCommand(helloCommand)
 
 	app := builder.Build()
-	app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		fmt.Print(err)
+	}
 }

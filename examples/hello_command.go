@@ -8,7 +8,7 @@ import (
 
 type (
 	HelloCommandFlags struct {
-		Name      string `flag:"require"`
+		Name      string
 		ClassRoom string `flag:"usage:学生的教师信息"`
 	}
 
@@ -34,7 +34,7 @@ var (
 )
 
 func (cmd *HelloCommand) Action(c *cli.Context) error {
-	f := c.Value.(HelloCommandFlags)
+	f := c.Value.(*HelloCommandFlags)
 	fmt.Printf("hello %s", f.Name)
 	return nil
 }
