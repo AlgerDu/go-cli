@@ -59,8 +59,8 @@ func (builder *defaultBuilder) useHelp() {
 
 	builder.app.GlobalFlags = append(builder.app.GlobalFlags, helpGloblaFlag)
 
-	innerHelpCmd := newHelp(builder.app)
-	builder.AddCommand(innerHelpCmd)
+	cmd := newHelp(builder.app)
+	builder.AddCommand(cmd)
 }
 
 func (builder *defaultBuilder) useVersion() {
@@ -69,8 +69,8 @@ func (builder *defaultBuilder) useVersion() {
 
 	builder.app.GlobalFlags = append(builder.app.GlobalFlags, versionGloblaFlag)
 
-	innerHelpCmd := newVersion(builder.app)
-	builder.AddCommand(innerHelpCmd)
+	cmd := newVersion(builder.app)
+	builder.AddCommand(cmd)
 }
 
 func (builder *defaultBuilder) buildPipelines() {

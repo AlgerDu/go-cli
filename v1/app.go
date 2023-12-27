@@ -122,6 +122,10 @@ func (app *innerApp) findCmdPipelineAction(context *Context) error {
 
 func (app *innerApp) resolveFlagStruct(context *Context) error {
 
+	if context.toRunCmd.DefaultFlags == nil {
+		return nil
+	}
+
 	supportFlags := context.anaylseCmdSupportFlags(context.toRunCmd)
 	ctxValue := exts.Reflect_New(reflect.TypeOf(context.toRunCmd.DefaultFlags).Elem()).Interface()
 
