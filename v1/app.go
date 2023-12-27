@@ -28,13 +28,6 @@ func newInnerApp() *innerApp {
 		GlobalFlags: []*GlobalFlag{},
 	}
 
-	app.pipelines = []PipelineAction{
-		app.checkGlobalFlags,
-		app.findCmdPipelineAction,
-		app.resolveFlagStruct,
-		app.runCmd,
-	}
-
 	return app
 }
 

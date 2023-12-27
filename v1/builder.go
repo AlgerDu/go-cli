@@ -1,7 +1,8 @@
 package cli
 
 type defaultBuilder struct {
-	app *innerApp
+	app              *innerApp
+	pipelineSettings *PipelineSettings
 }
 
 func NewBuilder(name string) AppBuilder {
@@ -17,6 +18,11 @@ func (builder *defaultBuilder) SetVersion(version string) AppBuilder {
 
 func (builder *defaultBuilder) SetUsage(usage string) AppBuilder {
 	builder.app.Usage = usage
+	return builder
+}
+
+func (builder *defaultBuilder) SetPipeline(settings *PipelineSettings) AppBuilder {
+	builder.pipelineSettings = settings
 	return builder
 }
 
@@ -44,6 +50,8 @@ func (builder *defaultBuilder) Build() App {
 	builder.useHelp()
 	builder.useVersion()
 
+	builder.buildPipelines()
+
 	return builder.app
 }
 
@@ -63,4 +71,25 @@ func (builder *defaultBuilder) useVersion() {
 
 	innerHelpCmd := newVersion(builder.app)
 	builder.AddCommand(innerHelpCmd)
+}
+
+func (builder *defaultBuilder) buildPipelines() {
+	settings := builder.pipelineSettings
+	if settings == nil {
+		settings = &PipelineSettings{}
+	}
+
+	settings.checkGlobalFlags = []PipelineAction{builder.app.checkGlobalFlags}
+	settings.findCmd = builder.app.findCmdPipelineAction
+	settings.resolveFlag = builder.app.resolveFlagStruct
+	settings.runCmd = builder.app.runCmd
+
+	pipelines := []PipelineAction{}
+	pipelines = append(pipelines, settings.BeferCheckGlobalFlags...)
+	pipelines = append(pipelines, settings.checkGlobalFlags...)
+	pipelines = append(pipelines, settings.findCmd)
+	pipelines = append(pipelines, settings.resolveFlag)
+	pipelines = append(pipelines, settings.runCmd)
+
+	builder.app.pipelines = pipelines
 }
