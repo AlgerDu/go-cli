@@ -147,7 +147,7 @@ func (app *innerApp) resolveFlagStruct(context *Context) error {
 			return fmt.Errorf("flag %s must set value", flag.Name)
 		}
 
-		if !set {
+		if !set && !flag.Multiple {
 			userSetValaues = append(userSetValaues, fmt.Sprintf("%v", flag.Default))
 		}
 
