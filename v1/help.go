@@ -57,7 +57,10 @@ func newHelp(
 
 func (cmd *HelpCommand) Action(c *Context) error {
 
-	flags := c.Value.(*helpCommandFlag)
+	flags := &helpCommandFlag{}
+	if c.Value != nil {
+		flags = c.Value.(*helpCommandFlag)
+	}
 
 	toDescriptCmd, exist := cmd.app.findCmd(flags.CmdPaths...)
 	if !exist {
