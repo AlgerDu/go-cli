@@ -33,8 +33,6 @@ func newInnerApp() *innerApp {
 
 func (app *innerApp) Run(args []string) error {
 
-	fmt.Printf("args: %v\n", args)
-
 	context := newContext()
 	context.CommandPaths, context.UserSetFlags = app.anaylseArgs(args)
 
