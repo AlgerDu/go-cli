@@ -31,7 +31,7 @@ func (builder *defaultBuilder) AddCommand(command Command, opt ...AddCommandOpti
 	innerCommand := NewInnerCommand(command)
 
 	if innerCommand.Name == "" {
-		builder.app.Action = innerCommand.Action
+		builder.app.innerCommand = innerCommand
 		innerCommand = builder.app.innerCommand
 
 		for _, option := range opt {
