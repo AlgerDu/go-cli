@@ -173,12 +173,23 @@ func bindFlagsToStruct(value string, flag *Flag, dst any) error {
 		}
 	}
 
-	v, err := exts.Reflect_ParseString(value, fieldValue.Kind())
-	if err != nil {
-		return err
-	}
+	if exts.Reflect_IsArray(fieldValue.Type()) {
 
-	fieldValue.Set(v)
+		v, err := exts.Reflect_ParseString(value, fieldValue.Type().Elem().Kind())
+		if err != nil {
+			return err
+		}
+
+		fieldValue.Set(reflect.Append(fieldValue, v))
+
+	} else {
+		v, err := exts.Reflect_ParseString(value, fieldValue.Kind())
+		if err != nil {
+			return err
+		}
+
+		fieldValue.Set(v)
+	}
 	return nil
 }
 

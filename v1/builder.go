@@ -1,7 +1,8 @@
 package cli
 
 type defaultBuilder struct {
-	app *innerApp
+	app              *innerApp
+	pipelineSettings *PipelineSettings
 }
 
 func NewBuilder(name string) AppBuilder {
@@ -20,12 +21,17 @@ func (builder *defaultBuilder) SetUsage(usage string) AppBuilder {
 	return builder
 }
 
+func (builder *defaultBuilder) SetPipeline(settings *PipelineSettings) AppBuilder {
+	builder.pipelineSettings = settings
+	return builder
+}
+
 func (builder *defaultBuilder) AddCommand(command Command, opt ...AddCommandOption) AppBuilder {
 
 	innerCommand := NewInnerCommand(command)
 
 	if innerCommand.Name == "" {
-		builder.app.Action = innerCommand.Action
+		builder.app.innerCommand = innerCommand
 		innerCommand = builder.app.innerCommand
 
 		for _, option := range opt {
@@ -44,6 +50,8 @@ func (builder *defaultBuilder) Build() App {
 	builder.useHelp()
 	builder.useVersion()
 
+	builder.buildPipelines()
+
 	return builder.app
 }
 
@@ -51,8 +59,8 @@ func (builder *defaultBuilder) useHelp() {
 
 	builder.app.GlobalFlags = append(builder.app.GlobalFlags, helpGloblaFlag)
 
-	innerHelpCmd := newHelp(builder.app)
-	builder.AddCommand(innerHelpCmd)
+	cmd := newHelp(builder.app)
+	builder.AddCommand(cmd)
 }
 
 func (builder *defaultBuilder) useVersion() {
@@ -61,6 +69,27 @@ func (builder *defaultBuilder) useVersion() {
 
 	builder.app.GlobalFlags = append(builder.app.GlobalFlags, versionGloblaFlag)
 
-	innerHelpCmd := newVersion(builder.app)
-	builder.AddCommand(innerHelpCmd)
+	cmd := newVersion(builder.app)
+	builder.AddCommand(cmd)
+}
+
+func (builder *defaultBuilder) buildPipelines() {
+	settings := builder.pipelineSettings
+	if settings == nil {
+		settings = &PipelineSettings{}
+	}
+
+	settings.checkGlobalFlags = []PipelineAction{builder.app.checkGlobalFlags}
+	settings.findCmd = builder.app.findCmdPipelineAction
+	settings.resolveFlag = builder.app.resolveFlagStruct
+	settings.runCmd = builder.app.runCmd
+
+	pipelines := []PipelineAction{}
+	pipelines = append(pipelines, settings.BeferCheckGlobalFlags...)
+	pipelines = append(pipelines, settings.checkGlobalFlags...)
+	pipelines = append(pipelines, settings.findCmd)
+	pipelines = append(pipelines, settings.resolveFlag)
+	pipelines = append(pipelines, settings.runCmd)
+
+	builder.app.pipelines = pipelines
 }

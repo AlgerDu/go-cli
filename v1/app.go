@@ -28,19 +28,10 @@ func newInnerApp() *innerApp {
 		GlobalFlags: []*GlobalFlag{},
 	}
 
-	app.pipelines = []PipelineAction{
-		app.checkGlobalFlags,
-		app.findCmdPipelineAction,
-		app.resolveFlagStruct,
-		app.runCmd,
-	}
-
 	return app
 }
 
 func (app *innerApp) Run(args []string) error {
-
-	fmt.Printf("args: %v\n", args)
 
 	context := newContext()
 	context.CommandPaths, context.UserSetFlags = app.anaylseArgs(args)
@@ -129,6 +120,10 @@ func (app *innerApp) findCmdPipelineAction(context *Context) error {
 
 func (app *innerApp) resolveFlagStruct(context *Context) error {
 
+	if context.toRunCmd.DefaultFlags == nil {
+		return nil
+	}
+
 	supportFlags := context.anaylseCmdSupportFlags(context.toRunCmd)
 	ctxValue := exts.Reflect_New(reflect.TypeOf(context.toRunCmd.DefaultFlags).Elem()).Interface()
 
@@ -154,7 +149,7 @@ func (app *innerApp) resolveFlagStruct(context *Context) error {
 			return fmt.Errorf("flag %s must set value", flag.Name)
 		}
 
-		if !set {
+		if !set && !flag.Multiple {
 			userSetValaues = append(userSetValaues, fmt.Sprintf("%v", flag.Default))
 		}
 

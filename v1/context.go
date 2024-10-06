@@ -2,6 +2,7 @@ package cli
 
 import (
 	"os"
+	"strings"
 )
 
 type (
@@ -24,6 +25,7 @@ type (
 		Stdout       Stdout
 
 		Value any
+		Items map[string]any
 
 		toRunCmd *innerCommand
 	}
@@ -32,6 +34,7 @@ type (
 func newContext() *Context {
 
 	wd, _ := os.Getwd()
+	wd = strings.ReplaceAll(wd, "\\", "/")
 
 	return &Context{
 		WorkDir: wd,
@@ -40,6 +43,8 @@ func newContext() *Context {
 		UserSetFlags: map[string][]string{},
 
 		Stdout: newStdout(),
+
+		Items: map[string]any{},
 	}
 }
 
