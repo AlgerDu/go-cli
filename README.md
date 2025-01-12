@@ -66,9 +66,9 @@ func main() {
 
 ```
 type HelloCommandFlags struct {
-	 	Name      string
-	 	ClassRoom string `flag:"name:class-room,usage:学生的教师信息"`
-	 }
+ 	Name      string
+ 	ClassRoom string `flag:"name:class-room,usage:学生的教师信息"`
+}
 ```
 
 支持的项：
